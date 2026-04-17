@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>현장지휘관 자격인증 실기평가표</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #2a2a2a;
+    --accent: #c0392b;
+    --accent2: #e74c3c;
+    --text: #f0f0f0;
+    --muted: #666;
+    --tab-active: #c0392b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: #000;
+    border-bottom: 2px solid var(--accent);
+    padding: 28px 40px 20px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .header-badge {
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .header-title h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .header-title p {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* ── TABS ── */
+  .tab-nav {
+    display: flex;
+    background: #000;
+    padding: 0 40px;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 28px;
+    cursor: pointer;
+    position: relative;
+    transition: color .2s;
+    letter-spacing: 1px;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform .2s;
+  }
+  .tab-btn:hover { color: #ccc; }
+  .tab-btn.active {
+    color: #fff;
+    font-weight: 700;
+  }
+  .tab-btn.active::after { transform: scaleX(1); }
+
+  /* ── CONTENT ── */
+  .tab-content { display: none; padding: 40px; animation: fadeIn .3s ease; }
+  .tab-content.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SECTION TITLE ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── TOGGLE BOXES (공통 탭) ── */
+  .boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 860px;
+  }
+  .item-box {
+    background: #000;
+    border: 2px solid #333;
+    color: #fff;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color .2s, transform .1s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .item-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform .25s ease;
+    z-index: 0;
+  }
+  .item-box.toggled::before { transform: scaleY(1); }
+  .item-box:hover { border-color: #777; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.6); }
+  .item-box.toggled { border-color: #ccc; }
+
+  .box-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #555;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    transition: color .25s;
+  }
+  .item-box.toggled .box-number { color: #aaa; }
+
+  .box-label {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+    transition: color .25s;
+  }
+  .item-box.toggled .box-label { color: #000; }
+
+  .box-status {
+    margin-top: 12px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-family: 'DM Mono', monospace;
+    color: #444;
+    position: relative;
+    z-index: 1;
+    transition: color .25s;
+  }
+  .item-box.toggled .box-status { color: #888; }
+
+  .hint-text {
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+  .hint-text span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    vertical-align: middle;
+    animation: blink 1.6s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  /* ── EVAL TABLE ── */
+  .eval-wrap { max-width: 900px; }
+  .eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .eval-table thead tr {
+    background: #000;
+    border-bottom: 2px solid var(--accent);
+  }
+  .eval-table thead th {
+    padding: 13px 16px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: .5px;
+    font-size: 13px;
+    color: #ddd;
+  }
+  .eval-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .eval-table tbody tr:hover { background: #1a1a1a; }
+  .eval-table tbody tr.group-header {
+    background: #161616;
+  }
+  .eval-table td {
+    padding: 12px 16px;
+    vertical-align: middle;
+  }
+  .eval-table td:first-child { font-weight: 700; color: var(--accent2); font-size: 13px; }
+  .td-center { text-align: center; }
+  .score-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 2px;
+    min-width: 42px;
+    text-align: center;
+  }
+  .score-total {
+    background: #000;
+    border: 1px solid var(--accent);
+    color: var(--accent2);
+  }
+  .total-row {
+    background: #0e0e0e !important;
+    border-top: 2px solid var(--border);
+  }
+  .total-row td { font-weight: 700; color: #fff; }
+
+  .grade-badge {
+    display: inline-block;
+    padding: 3px 14px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    border-radius: 2px;
+  }
+  .grade-junior  { background: #1a3a4a; color: #5bc8f5; border: 1px solid #2a6080; }
+  .grade-mid     { background: #2a2a10; color: #f5d060; border: 1px solid #6a5a10; }
+  .grade-senior  { background: #2a1010; color: #f58060; border: 1px solid #7a3020; }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    header { padding: 20px; flex-direction: column; align-items: flex-start; }
+    .tab-content { padding: 24px 16px; }
+    .boxes-grid { grid-template-columns: repeat(2, 1fr); }
+    .tab-btn { padding: 12px 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">소방청</div>
+  <div class="header-title">
+    <h1>현장지휘관 자격인증 실기평가표</h1>
+    <p>FIELD COMMANDER QUALIFICATION · PRACTICAL EVALUATION SYSTEM · 2025</p>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('common', this)">공통</button>
+  <button class="tab-btn" onclick="switchTab('junior', this)">초급</button>
+  <button class="tab-btn" onclick="switchTab('mid', this)">중급</button>
+  <button class="tab-btn" onclick="switchTab('senior', this)">고급</button>
+</nav>
+
+<!-- ══════════════ 공통 탭 ══════════════ -->
+<div id="tab-common" class="tab-content active">
+  <div class="section-label">COMMON · 공통 평가항목</div>
+  <div class="section-title">공통 체크리스트 — 클릭하여 확인 표시</div>
+
+  <div class="boxes-grid">
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">01</div>
+      <div class="box-label">초기상황보고</div>
+      <div class="box-status">INITIAL REPORT</div>
+    </div>
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">02</div>
+      <div class="box-label">지휘권선언</div>
+      <div class="box-status">COMMAND DECLARATION</div>
+    </div>
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">03</div>
+      <div class="box-label">전략설정</div>
+      <div class="box-status">STRATEGY SETUP</div>
+    </div>
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">04</div>
+      <div class="box-label">방면지정</div>
+      <div class="box-status">SECTOR ASSIGNMENT</div>
+    </div>
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">05</div>
+      <div class="box-label">지휘형태</div>
+      <div class="box-status">COMMAND TYPE</div>
+    </div>
+    <div class="item-box" onclick="toggleBox(this)">
+      <div class="box-number">06</div>
+      <div class="box-label">임무부여</div>
+      <div class="box-status">MISSION ASSIGN</div>
+    </div>
+  </div>
+
+  <p class="hint-text"><span></span>박스를 클릭하면 확인(흰색) / 미확인(검정) 상태가 전환됩니다.</p>
+</div>
+
+<!-- ══════════════ 초급 탭 ══════════════ -->
+<div id="tab-junior" class="tab-content">
+  <div class="section-label">JUNIOR · 초급 현장지휘관</div>
+  <div class="section-title">초급 현장지휘관 실기평가표 <span class="grade-badge grade-junior">JUNIOR</span></div>
+  <div class="eval-wrap">
+    <table class="eval-table">
+      <thead>
+        <tr>
+          <th style="width:22%">평가영역</th>
+          <th>평가항목</th>
+          <th style="width:14%">배점</th>
+          <th style="width:14%">획득점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>상황인식</td><td>초기 현장 상황 파악 및 보고</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td></td><td>위험요소 식별 및 전파</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>지휘통신</td><td>지휘권 선언 및 지휘소 설치</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td></td><td>무선교신 절차 준수</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>전술운용</td><td>진입전술 선택 및 적용</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>방면 지정 및 임무 부여</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td>안전관리</td><td>개인안전장비 착용 여부</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td></td><td>현장 안전관리 시행</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>종합평가</td><td>평가관 종합 의견</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr class="total-row"><td colspan="2">합 계</td><td class="td-center"><span class="score-badge score-total">100</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ 중급 탭 ══════════════ -->
+<div id="tab-mid" class="tab-content">
+  <div class="section-label">INTERMEDIATE · 중급 현장지휘관</div>
+  <div class="section-title">중급 현장지휘관 실기평가표 <span class="grade-badge grade-mid">INTERMEDIATE</span></div>
+  <div class="eval-wrap">
+    <table class="eval-table">
+      <thead>
+        <tr>
+          <th style="width:22%">평가영역</th>
+          <th>평가항목</th>
+          <th style="width:14%">배점</th>
+          <th style="width:14%">획득점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>현장지휘</td><td>현장지휘소 운영 및 지휘 체계 확립</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>상급·하급 지휘관과의 지휘 연계</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>전략·전술</td><td>화재 규모에 따른 전략 결정</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>대원 배치 및 전술 조정</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td>자원관리</td><td>대응자원 요청 및 배분</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td></td><td>예비대 운영</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>안전·통제</td><td>현장 안전구역 설정 및 통제</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>보고·기록</td><td>상황보고 및 현장기록 관리</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>종합평가</td><td>평가관 종합 의견</td><td class="td-center"><span class="score-badge">5</span></td><td></td></tr>
+        <tr class="total-row"><td colspan="2">합 계</td><td class="td-center"><span class="score-badge score-total">100</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ 고급 탭 ══════════════ -->
+<div id="tab-senior" class="tab-content">
+  <div class="section-label">ADVANCED · 고급 현장지휘관</div>
+  <div class="section-title">고급 현장지휘관 실기평가표 <span class="grade-badge grade-senior">ADVANCED</span></div>
+  <div class="eval-wrap">
+    <table class="eval-table">
+      <thead>
+        <tr>
+          <th style="width:22%">평가영역</th>
+          <th>평가항목</th>
+          <th style="width:14%">배점</th>
+          <th style="width:14%">획득점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>통합지휘</td><td>통합지휘소 설치·운영</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>유관기관 협력 및 통합지휘 체계 구축</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td>위기관리</td><td>대형·복합재난 상황 판단 및 대응</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>사상자 관리 및 의료지원 체계 구축</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>지휘결심</td><td>전략적 우선순위 결정 및 자원 집중</td><td class="td-center"><span class="score-badge">15</span></td><td></td></tr>
+        <tr><td></td><td>상황 변화에 따른 전술 전환 결심</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>대외협력</td><td>언론 대응 및 주민 통보·대피 지휘</td><td class="td-center"><span class="score-badge">10</span></td><td></td></tr>
+        <tr><td>사후관리</td><td>현장 복구 및 사후 보고서 작성</td><td class="td-center"><span class="score-badge">5</span></td><td></td></tr>
+        <tr><td>종합평가</td><td>평가관 종합 의견</td><td class="td-center"><span class="score-badge">5</span></td><td></td></tr>
+        <tr class="total-row"><td colspan="2">합 계</td><td class="td-center"><span class="score-badge score-total">100</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleBox(el) {
+    el.classList.toggle('toggled');
+  }
+</script>
+</body>
+</html>
